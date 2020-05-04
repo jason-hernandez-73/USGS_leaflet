@@ -27,8 +27,20 @@ d3.json(url, function(data){
 
     function markerSize(magnitude) {
         var magn=[];
-        magn.push(magnitude[2]);
-        return magn * 10;
+        magn.push(magnitude);
+        if(magn>6.5){
+            return magn*50000;
+        }
+        else if(magn>6){
+            return magn*25000;
+        }
+        else if(magn>5){
+            return magn*10000;
+        }
+        else {
+            return magn*5000;
+        }
+        
     };
 
     features=data.features
@@ -37,7 +49,7 @@ d3.json(url, function(data){
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5,
-            radius: markerSize(features[i].geometry.coordinates)
+            radius: markerSize(features[i].properties.mag)
         }).bindPopup('<h1>'+features[i].properties.place+'</h1><hr><h3> Magnitude: '+features[i].properties.mag+'</h3><br></h3>Time:'+features[i].properties.time).addTo(mymap);
     };
 });
