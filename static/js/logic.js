@@ -14,7 +14,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: API_KEY
 }).addTo(mymap);
 
-// Add layers
+// Create layers
 d3.json(url, function (data) {
     console.log(data.features);
 
@@ -40,7 +40,7 @@ d3.json(url, function (data) {
         else {
             return magn * 5000;
         }
-        
+
     };
     function markerColor(magnitude) {
         var magn = [];
@@ -63,7 +63,7 @@ d3.json(url, function (data) {
             color = '#99cc00';
             return color;
         }
-        
+
     };
 
     // Based on https://stackoverflow.com/questions/57092388/converting-a-13-digit-unix-timestamp-to-datetime-with-javascript
@@ -73,6 +73,7 @@ d3.json(url, function (data) {
         return date;
     }
 
+    // Add layers to map
     features = data.features
     for (var i = 0; i < features.length; i++) {
         L.circle(markerLocation(features[i].geometry.coordinates), {
@@ -82,4 +83,24 @@ d3.json(url, function (data) {
             radius: markerSize(features[i].properties.mag),
         }).bindPopup('<h1>' + features[i].properties.place + '</h1><hr><h3> Magnitude: ' + features[i].properties.mag + '</h3><h3>Date: ' + dateTime(features[i].properties.time) + '</h3>').addTo(mymap);
     };
+
+    // Add legend -- based on the leaflet.js documentation
+    var legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 4, 5, 6],
+            labels = [];
+
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+    legend.addTo(map);
 });
