@@ -3,7 +3,7 @@ const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significa
 
 
 // Create base map
-var mymap = L.map('map').setView([0.00, 0.00], 3);
+var mymap = L.map('map').setView([10.00, 0.00], 3);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -43,6 +43,13 @@ d3.json(url, function (data) {
 
     };
 
+    // Based on https://stackoverflow.com/questions/57092388/converting-a-13-digit-unix-timestamp-to-datetime-with-javascript
+    function dateTime(time) {
+        var date = [];
+        date.push(new Date(time).toISOString().substr(0, 10));
+        return date;
+    }
+
     features = data.features
     for (var i = 0; i < features.length; i++) {
         L.circle(markerLocation(features[i].geometry.coordinates), {
@@ -50,6 +57,6 @@ d3.json(url, function (data) {
             fillColor: '#f03',
             fillOpacity: 0.5,
             radius: markerSize(features[i].properties.mag)
-        }).bindPopup('<h1>' + features[i].properties.place + '</h1><hr><h3> Magnitude: ' + features[i].properties.mag + '</h3><br></h3>Time:' + features[i].properties.time).addTo(mymap);
+        }).bindPopup('<h1>' + features[i].properties.place + '</h1><hr><h3> Magnitude: ' + features[i].properties.mag + '</h3><h3>Date: ' + dateTime(features[i].properties.time) + '</h3>').addTo(mymap);
     };
 });
