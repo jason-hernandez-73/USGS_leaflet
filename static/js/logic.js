@@ -46,7 +46,7 @@ d3.json(url, function (data) {
         var magn = [];
         var color = [];
         magn.push(magnitude);
-        color.push(color)
+        color.push(color);
         if (magn > 6) {
             color = '#ff3300';
             return color;
@@ -71,10 +71,10 @@ d3.json(url, function (data) {
         var date = [];
         date.push(new Date(time).toISOString().substr(0, 10));
         return date;
-    }
+    };
 
     // Add layers to map
-    features = data.features
+    var features = data.features;
     for (var i = 0; i < features.length; i++) {
         L.circle(markerLocation(features[i].geometry.coordinates), {
             color: markerColor(features[i].properties.mag),
@@ -86,9 +86,24 @@ d3.json(url, function (data) {
 
     // Add legend -- based on the leaflet.js documentation
     var legend = L.control({ position: 'bottomright' });
-
-    legend.onAdd = function (map) {
-
+    //var legend=L.control();
+    function getColor(magnitude) {
+        switch(true) {
+            case magnitude > 6: 
+                color = '#ff3300';
+                return color;
+            case magnitude > 5:
+                color = '#ffa31a';
+                return color;
+            case magnitude > 4:
+                color = '#ffff00';
+                return color;
+            default:
+                color = '#99cc00';
+                return color;
+        };
+    };
+    legend.onAdd = function () {
         var div = L.DomUtil.create('div', 'info legend'),
             grades = [0, 4, 5, 6],
             labels = [];
@@ -98,9 +113,9 @@ d3.json(url, function (data) {
             div.innerHTML +=
                 '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
                 grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-        }
-
+         //   console.log(div.innerHTML)
+        };
         return div;
     };
-    legend.addTo(map);
+    legend.addTo(mymap);
 });
